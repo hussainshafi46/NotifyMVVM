@@ -25,7 +25,7 @@ class NotifyListener: NotificationListenerService() {
             val bundle = notification.extras
             val title = bundle.getCharSequence("android.title").toString()
             val text = bundle.getCharSequence("android.text").toString()
-            val testModel = NotificationModel(0, text, title)
+            val testModel = NotificationModel(title, text)
             GlobalScope.launch {
                 Log.d(TAG, "Insert Result: ${notifyDao.insert(testModel)}")
             }

@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.flow.collect
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ae.notify.R
 import com.ae.notify.data.NotificationModel
@@ -29,8 +30,19 @@ class SavedNotificationsFragment : Fragment(R.layout.fragment_saved_notification
                 layoutManager = LinearLayoutManager(requireContext())
             }
         }
-        viewModel.databaseContents.observe(this as LifecycleOwner) {
+        viewModel.databaseContents.observe(viewLifecycleOwner) {
             recyclerAdapter.submitList(it)
+        }
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.notificationEvents.collect { event ->
+                when(event) {
+                    is SavedNotificationsViewModel.SavedNotificationEvents.NavigateToReadNotifications -> {
+                        val action = SavedNotificationsFragmentDirections
+                            .actionSavedNotificationsFragmentToReadNotificationFragment(event.notificationModel)
+                        findNavController().navigate(action)
+                    }
+                }
+            }
         }
     }
     override fun onItemClick(notificationModel: NotificationModel) {

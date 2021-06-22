@@ -4,11 +4,18 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import java.text.DateFormat
 
 @Parcelize
 @Entity(tableName = "notification_table")
-data class NotificationModel (
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+data class NotificationModel(
     val sender: String?,
-    val message: String?
-    ): Parcelable
+    val message: String?,
+    val timestamp: Long = System.currentTimeMillis(),
+    @PrimaryKey(autoGenerate = true) val id: Int = 0
+) : Parcelable {
+
+    val formattedTimeStamp: String
+        get() = DateFormat.getDateTimeInstance().format(timestamp)
+
+}
