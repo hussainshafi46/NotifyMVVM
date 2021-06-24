@@ -25,7 +25,26 @@ class SavedNotificationsViewModel @Inject constructor(
         notificationEventsChannel.send(SavedNotificationEvents.NavigateToReadNotifications(notificationModel))
     }
 
+    fun rightSwipe(notification: NotificationModel) = viewModelScope.launch {
+        notifyDao.delete(notification)
+        notificationEventsChannel.send(SavedNotificationEvents.ShowUndoMsg(notification))
+    }
+
+    fun undoDelete(notificationModel: NotificationModel) = viewModelScope.launch {
+        notifyDao.insert(notificationModel)
+    }
+
+    fun deleteAllClicked() = viewModelScope.launch {
+        notificationEventsChannel.send(SavedNotificationEvents.DeleteAllConfirmMsg("Are you sure you want to delete all saved notifications?"))
+    }
+
+    fun clearDatabaseConfirmed() = viewModelScope.launch {
+        notifyDao.clearDatabase()
+    }
+
     sealed class SavedNotificationEvents {
         data class NavigateToReadNotifications(val notificationModel: NotificationModel): SavedNotificationEvents()
+        data class ShowUndoMsg(val notificationModel: NotificationModel): SavedNotificationEvents()
+        data class DeleteAllConfirmMsg(val message: String): SavedNotificationEvents()
     }
 }

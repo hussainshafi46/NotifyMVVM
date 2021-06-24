@@ -1,5 +1,6 @@
 package com.ae.notify.ui.readnotification
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -16,10 +17,13 @@ class ReadNotificationFragment : Fragment(R.layout.fragment_read_notification) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentReadNotificationBinding.bind(view)
-
+        val pm = requireContext().packageManager
         binding.apply {
-            sender.text = viewModel.model?.sender
             message.text = viewModel.model?.message
+            timestamp.text = viewModel.model?.formattedTimeStamp
+            if(viewModel.model != null) {
+                appName.text = pm.getApplicationLabel(pm.getApplicationInfo(viewModel.model!!.appPackage, PackageManager.GET_META_DATA))
+            }
         }
     }
 }
